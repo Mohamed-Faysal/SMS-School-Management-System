@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Page - Assignments</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+
+    <style>
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f4c75, #3282b8, #bbe1fa, #1b262c);
+            background-size: 400% 400%;
+            animation: gradientBackground 10s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .page-title {
+            font-size: 48px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            animation: fadeIn 2s ease;
+        }
+
+        .assignment-card {
+            width: auto; /* Adjust width to the content */
+            max-width: 700px; /* Max width for larger screens */
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+            overflow: hidden; /* Ensure no content spills out */
+            display: flex;
+            flex-direction: column; /* Allows content to push the card size */
+            height: auto; /* Height adjusts to fit content */
+        }
+
+        .assignment-content {
+            padding: 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Makes sure content grows to fill available space */
+        }
+
+        .description pre {
+            white-space: pre-wrap; /* Allows text to wrap instead of overflowing */
+            word-wrap: break-word; /* Ensures long words don't overflow */
+            overflow-wrap: break-word;
+            color: #3282b8;
+            font:bold;
+            font-weight: bold; /* Correct way to make text bold */
+            font-size: 16px; 
+        }
+
+
+
+
+        .assignment-card:hover {
+            transform: scale(1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(0.95);
+                opacity: 1;
+            }
+        }
+
+        .assignment-header {
+            background-color: #0f4c75;
+            color: #fff;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+
+        .course-info {
+            margin-bottom: 15px;
+            font-size: 16px;
+            background-color: #e8f0fe;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .publisher-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #030303;
+        }
+
+        .publisher-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            
+        }
+
+
+
+        .deadline-container {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #af1414;
+
+        }
+
+        .deadline-container p {
+            margin: 5px 0;
+        }
+
+        .upload-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-container input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0f4c75;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .upload-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #0f4c75;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:hover {
+            background-color: #287097;
+        }
+
+        @media (max-width: 768px) {
+            .assignment-card {
+                max-width: 90%;
+            }
+
+            .page-title {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="page-title">HomeWorks</h1>
+    {% for assignment in assignments %}
+        <div class="assignment-card">
+            <div class="assignment-header">HomeWork {{ assignment.Assignement_Number }}</div>
+            <div class="assignment-content">
+                <div class="course-info">
+                    <p><strong>Course Name:</strong> {{ assignment.CourseName }}</p>
+                    <p><strong>Course ID:</strong> {{ assignment.CourseID }}</p>
+                </div>
+
+                <div class="publisher-info">
+                    {% if assignment.PublisherImage %}
+                        <img src="data:image/jpeg;base64,{{ assignment.PublisherImage }}" alt="Publisher Photo">
+                    {% endif %}
+                    <div>
+                        <p class="name">Publisher: Dr.{{ assignment.TeacherName }}</p>
+                        <p class="date">Date of publish: {{ assignment.DateOfPublish }}</p>
+                    </div>
+                </div>
+
+                <div class="description">
+                    <pre>{{ assignment.Description }}</pre>
+                </div>
+                
+
+                <div class="deadline-container">
+                    <p><strong>Deadline Date:</strong> {{ assignment.Deadline_Date }}</p>
+                    {% if assignment.Deadline_Passed %}
+                        <p style="color: red; font-weight: bold;">Deadline has passed</p>
+                    {% endif %}
+                </div>
+
+                {% if assignment.File_Content %}
+                    <p><a href="data:application/pdf;base64,{{ assignment.File_Content }}" target="_blank">View Homework</a></p>
+                {% else %}
+                    <p>No PDF available</p>
+                {% endif %}
+
+                <div class="upload-container">
+                    {% if assignment.Deadline_Passed %}
+                        <p style="color: red; font-weight: bold;">Submission closed due to deadline.</p>
+                    {% elif assignment.Flag == 1 %}
+                    <p style="color: rgb(0, 255, 55); font-weight: bold;">HomeWork submitted.</p>
+                    {% else %}
+                        <label for="file-upload-{{ assignment.Assignement_Number }}" class="upload-icon">+</label>
+                        <input id="file-upload-{{ assignment.Assignement_Number }}" type="file" name="submission" 
+                               onchange="displayFileName(event, {{ assignment.Assignement_Number }})">
+                        <span id="file-name-{{ assignment.Assignement_Number }}" style="margin-right: 10px;">No file selected</span>
+                        <button class="submit-button" 
+                                onclick="submitFile({{ assignment.Assignement_Number }}, {{ assignment.AssignmentID }}, {{ assignment.StudentID }}, {{ assignment.CourseID }})">
+                            Submit
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No assignments found.</p>
+    {% endfor %}
+
+    <script>
+        function displayFileName(event, assignmentId) {
+            const fileInput = event.target;
+            const fileNameDisplay = document.getElementById(`file-name-${assignmentId}`);
+            fileNameDisplay.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "No file selected";
+        }
+
+        function submitFile(assignmentId, AssignmentID, studentId, courseId) {
+            const fileInput = document.getElementById(`file-upload-${assignmentId}`);
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('assignment_id', AssignmentID);
+            formData.append('student_id', studentId);
+            formData.append('course_id', courseId);
+            formData.append('file', fileInput.files[0]);
+
+            fetch("{% url 'HomeworkDelivered' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => alert('An error occurred.'));
+        }
+    </script>
+</body>
+</html>

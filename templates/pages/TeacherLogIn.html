@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management Login</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://via.placeholder.com/1500') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            animation: slide 20s infinite;
+        }
+
+        @keyframes slide {
+            0% { background-image: url("{% static 'Images/Hall.jpg' %}"); background-position: 0% 0; }
+            25% { background-image: url("{% static 'Images/Class.jpg' %}"); background-position: 100% 0; }
+            50% { background-image: url("{% static 'Images/ClassRoom.jpg' %}"); background-position: 200% 0; }
+            75% { background-image: url("{% static 'Images/ClassRoom2.jpg' %}"); background-position: 300% 0; }
+            100% { background-image: url("{% static 'Images/Hall.jpg' %}"); background-position: 400% 0; }
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 20px 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .login-container .logo {
+            margin: 0 auto 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #0f4c75;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-container .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-container h2 {
+            color: #0f4c75;
+            margin-bottom: 20px;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .login-container label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #333;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.2s;
+        }
+
+        .login-container input[type="submit"] {
+            background-color: #0f4c75;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.4s;
+        }
+
+        .login-container input[type="submit"]:hover {
+            background-color: #08394f;
+            transform: scale(1.05);
+        }
+
+        .login-container input[type="submit"]:active {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Circular Image -->
+        <div class="logo">
+            <img src="{% static 'Images/School Logo.jpg' %}" alt="School Logo">
+        </div>
+
+        <h2>Login</h2>
+        <form action="{% url 'TeacherLogIn2' %}" method="post">
+            {% csrf_token %}
+            <label for="ID">ID</label>
+            <input type="text" id="id" name="id" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</body>
+</html>
+
+

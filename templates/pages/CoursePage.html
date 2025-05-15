@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+    <title>School Management System Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #0f4c75;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #3282b8;
+        }
+
+        .sidebar .logo img {
+            height: 50px;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            padding: 15px 20px;
+            text-align: left;
+        }
+
+        .sidebar nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #3282b8;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f8f8f8;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #0f4c75;
+            margin-bottom: 10px;
+        }
+
+        .header .date-time {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .materials {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .material-card {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%; /* Full width */
+        }
+
+        .material-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .material-header img {
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+        }
+
+        .material-header .publisher-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px; /* Adjust spacing */
+        }
+
+        .material-header .publisher-info .name {
+            font-weight: bold;
+            color: #0f4c75;
+        }
+
+        .material-header .publisher-info .date {
+            color: #555;
+        }
+
+        .material-description {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .material-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .material-content .material-item {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .material-content .material-item img,
+        .material-content .material-item video,
+        .material-content .material-item audio {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .material-content .material-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .material-content .material-description {
+            color: #555;
+        }
+
+        .material-content a {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background-color: #3282b8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{% static 'Images/Teacher.png' %}" alt="School Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">View Students</a></li>
+                <li><a href="#">Course Announcements</a></li>
+                <li><a href="#">Make Announcements</a></li>
+                <li><a href="{% url 'UploadMaterialPage' %}">Upload Material</a></li>
+                <li><a href="#">Make Exam</a></li>
+                <li><a href="#">Delivered Exam</a></li>
+                <li><a href="#">Make Homework</a></li>
+                <li><a href="#">Delivered Homework</a></li>
+                <li><a href="#">Generate Grades</a></li>
+                <li><a href="#">Take Attendance</a></li>
+                <li><a href="#">Generate Report</a></li>
+                <li><a href="#">Public Chat</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Mathematics</h1>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+        <div class="materials">
+            <!-- PDF Widget -->
+            <div class="material-card">
+                <div class="material-header">
+                    <img src="{% static 'Images/Teacher.png' %}" alt="Publisher Avatar">
+                    <div class="publisher-info">
+                        <span class="name">Publisher Name: Teacher</span>
+                        <span class="date">Publish Date: July 7th</span>
+                    </div>
+                </div>
+                <pre>
+Dear students,
+
+
+This file regarding yasterday's class which includes exercises and answers to those exercises.
+
+Best Regards
+                </pre>
+                <div class="material-content">
+                    <a href="{% static 'Images/lecture10.pdf' %}" target="_blank" class="open-pdf">View PDF</a>
+                </div>
+            </div>
+<!-- Image Widget -->
+<div class="material-card">
+    <div class="material-header">
+        <img src="{% static 'Images/Teacher.png' %}" alt="Publisher Avatar">
+        <div class="publisher-info">
+            <span class="name">Publisher Name: Teacher</span>
+            <span class="date">Publish Date: July 8th</span>
+        </div>
+    </div>
+    <pre>
+Dear students,
+
+
+Kindly find the quiz model answer in order to review it before the midterm.
+
+Best Regards
+    </pre>
+    <div class="material-content">
+        <div class="material-item">
+            <a href="{% static 'Images/Answer.jpg' %}" target="_blank">
+                <img src="{% static 'Images/Answer.jpg' %}" alt="Sample Image">
+            </a>
+        </div>
+    </div>
+</div>
+
+            <!-- Video Widget -->
+            <div class="material-card">
+                <div class="material-header">
+                    <img src="{% static 'Images/Teacher.png' %}" alt="Publisher Avatar">
+                    <div class="publisher-info">
+                        <span class="name">Publisher Name: Teacher</span>
+                        <span class="date">Publish Date: July 9th</span>
+                    </div>
+                </div>
+                <pre>
+Dear students,
+
+
+The video is much informative for the tommorow's class.
+
+Plz watch it before coming.
+
+Best Regards
+                </pre>
+                <div class="material-content">
+                    <div class="material-item">
+                        <video controls>
+                            <source src="{% static 'Images/ShortVideo.mp4' %}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+              
+                    </div>
+                </div>
+            </div>
+            <!-- Audio Widget -->
+            <div class="material-card">
+                <div class="material-header">
+                    <img src="{% static 'Images/Teacher.png' %}" alt="Publisher Avatar">
+                    <div class="publisher-info">
+                        <span class="name">Publisher Name: Teacher</span>
+                        <span class="date">Publish Date: July 10th</span>
+                    </div>
+                </div>
+                <pre>
+Dear students,
+
+
+Kindly find the quiz model answer in order to review it before the midterm.
+
+Best Regards
+                </pre>
+                <div class="material-content">
+                    <div class="material-item">
+                        <audio controls>
+                            <source src="{% static 'Audio/sample_audio.mp3' %}" type="audio/mp3">
+                            Your browser does not support the audio tag.
+                        </audio>
+                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

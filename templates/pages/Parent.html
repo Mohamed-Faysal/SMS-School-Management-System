@@ -1,0 +1,459 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+</head>
+<body>
+    {% for Information in StudentRecord %}
+    {% for Count in AnnouncementNum %}
+    {% for Parent in ParentRecord %}
+
+    <div class="container">
+        <aside id="sidebar" class="sidebar">
+            <div class="profile">
+                <img src="data:image/jpeg;base64,{{ Parent.ParentImage }}" alt="Publisher Photo" class="publisher-photo">
+                <h2>Parent</h2>
+            </div>       
+            <nav>
+                <ul>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{% url 'StudentInformation' Information.StudentID %}"><i class="fas fa-user"></i> Profile</a></li>
+                        <li><a href="{% url 'StudentSchedulePage' Information.StudentID %}"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
+                        {% if Count.0 != 0 %}
+                        <li><a href="{% url 'announcements' Information.StudentID %}"><i class="fas fa-bullhorn"></i> Announcements
+                            <span class="notification-count">{{ Count.0 }}</span>
+                        </a></li> 
+                        {% else %}
+                        <li><a href=" {% url 'announcements' Information.StudentID %} "><i class="fas fa-pencil-alt"></i> Announcements</a></li>
+                        {% endif %}
+                        <li><a href="#"><i class="fas fa-book"></i> Courses</a></li>
+                        <li><a href="{% url 'index2' Information.StudentID %}"><i class="fas fa-list-alt"></i> Attendance History</a></li>
+                        <li><a href="{% url 'FinalGrade' Information.StudentID %}"><i class="fas fa-graduation-cap"></i> Grades</a></li>
+                        <li><a href="{% url 'MainPage' %}"><i class="fas fa-sign-out-alt"></i> Sign out</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <span id="menu-icon">☰</span>
+                <h1>Welcome To The Parent Page</h1>
+                <div class="header-icons">
+                    <img src="data:image/jpeg;base64,{{ Parent.ParentImage }}" alt="Publisher Photo" class="publisher-photo">
+                </div>
+            </header>
+            <section class="courses">
+                <div class="course-card technology">
+                    <div class="course-container">
+                    {% for Record in CourseRecord %}
+                        <div class="course-widget">
+                            <a href="{% url 'CoursePageStudent' Information.StudentID Record.CourseID %}">
+                                <img src="data:image/jpeg;base64,{{ Record.CourseImage }}" alt="Logo Image">
+
+                                <div class="course-content">
+                                    <h2 class="course-id">Course: {{ Record.CourseName }}</h2>
+                                    <h3 class="course-title">ID: {{ Record.CourseID }}</h3>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                   
+            </section>
+            
+        
+        </main>
+        <aside class="right-sidebar">
+            <div class="calendar">
+                <h3 id="calendar-month-year"></h3>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+            <div class="upcoming-events">
+                <h3>Upcoming Events</h3>
+                <ul>
+                    <li>No upcoming events at the moment</li>
+
+                </ul>
+            </div>
+        </aside>
+        
+        
+    </div>
+    <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menuIcon = document.getElementById("menu-icon");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.querySelector(".main-content");
+
+    menuIcon.addEventListener("click", function () {
+        sidebar.classList.toggle("show");
+        mainContent.classList.toggle("sidebar-visible");
+        mainContent.classList.toggle("sidebar-hidden");
+    });
+
+    // Function to populate the calendar with the current month and year
+    function populateCalendar() {
+        const calendarGrid = document.getElementById("calendar-grid");
+        const calendarMonthYear = document.getElementById("calendar-month-year");
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const day = now.getDate(); // Get the current day of the month
+
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        calendarMonthYear.textContent = `${monthNames[month]} ${year}`;
+
+        // Get the first day of the month
+        const firstDay = new Date(year, month, 1).getDay();
+        // Get the number of days in the month
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Clear previous dates
+        calendarGrid.innerHTML = '';
+
+        // Add the days of the month starting from the first day of the week
+        for (let dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
+            const dateElement = document.createElement('div');
+            dateElement.classList.add('date');
+            dateElement.textContent = dayOfMonth;
+
+            // Add a class to shade the current day
+            if (dayOfMonth === day) {
+                dateElement.classList.add('current-day');
+            }
+
+            calendarGrid.appendChild(dateElement);
+        }
+    }
+
+    populateCalendar();
+});
+
+
+
+
+</script>
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+</body>
+
+<style>
+.notification-count {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f4f7f6;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    position: relative; /* Add this */
+}
+
+.sidebar, .right-sidebar {
+    width: 20%;
+    padding: 20px;
+    background-color: #0f4c75;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: transform 0.9s ease;
+}
+
+.sidebar {
+    border-right: 1px solid #0f4c75;
+    position: absolute; /* Change from fixed to absolute */
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%); /* Hide sidebar by default */
+}
+
+.sidebar.show {
+    transform: translateX(0); /* Show sidebar when .show is added */
+}
+
+.right-sidebar {
+    border-left: 1px solid #e0e0e0;
+    margin-left: auto;
+}
+
+.profile {
+    text-align: center;
+}
+
+.profile img {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+
+.selectors button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.selectors button:hover {
+    background-color: #ccc;
+}
+
+nav ul {
+    list-style: none;
+}
+
+nav li {
+    margin-bottom: 32px;
+}
+
+nav li a {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 10px;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+nav li a:hover {
+    background-color: #007bff; /* Change to your desired hover color */
+}
+
+.sidebar nav ul li {
+            padding: 5px 20px;
+            text-align: left;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease;
+    margin-left: 20%; /* Ensure main content is not hidden behind sidebar */
+}
+
+.main-content.sidebar-hidden {
+    margin-left: 0; /* Remove margin when sidebar is hidden */
+}
+
+/* Ensure that when the sidebar is shown, it doesn't overlap the content */
+.main-content.sidebar-visible {
+    margin-left: 20%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#menu-icon {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.header input {
+    width: 60%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icons img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.courses {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    margin-left: 130px;
+
+}
+
+.course-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Align items to the start of the container */
+    margin-left: 5%;
+    margin-top: 2%;
+}
+
+.course-widget {
+    width: 150px;
+    height: 200px;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    background-color: white;
+    transition: transform 0.3s;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.course-widget:hover {
+    transform: translateY(-5px);
+}
+
+.course-widget a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.course-widget img {
+    width: 100%;
+    height: auto;
+}
+
+.course-content {
+    padding: 15px;
+    background-color: #0f4c75;
+
+
+}
+
+.course-title {
+    font-size: 10px;
+    margin: 10px;
+    color: #f4f7f6;
+
+    
+}
+
+.course-id {
+    font-size: 10px;
+    margin: 10px;
+    margin-top: -10px;
+    color: #f4f7f6;
+
+}
+.course-description {
+    font-size: 14px;
+    color: #555;
+    margin-top: 5px;
+}
+.schedule {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.schedule .schedule-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    gap: 10px;
+}
+
+.schedule .time-slot, .schedule .day {
+    background-color: #0f4c75;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.schedule .class {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.schedule .class.applied-science { background-color: #ff7f50; }
+.schedule .class.technology { background-color: #6495ed; }
+.schedule .class.ux-design { background-color: #dda0dd; }
+.schedule .class.ai { background-color: #98fb98; }
+.schedule .class.business { background-color: #ffdab9; }
+
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
+    background-color: #0f4c75;
+    padding: 10px;
+    border-radius: 7px;
+
+}
+
+.calendar-grid .date {
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.calendar-grid .date.selected {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.calendar-grid .date.current-day {
+    background-color: #007bff;
+    color: #fff;
+}
+
+
+.upcoming-events {
+    margin-top: 20px;
+}
+
+.upcoming-events ul {
+    list-style: none;
+}
+
+.upcoming-events li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+</style>
+
+</html>

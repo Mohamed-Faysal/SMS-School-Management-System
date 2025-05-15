@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Assign Course to Teacher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);
+            animation: backgroundAnimation 5s ease infinite;
+        }
+
+        @keyframes backgroundAnimation {
+            0% { background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%); }
+            50% { background: linear-gradient(135deg, #3282b8 0%, #0f4c75 100%); }
+            100% { background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%); }
+        }
+
+        .add-course-form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            transform: scale(0.9);
+            animation: popUp 0.6s ease-out forwards;
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .success-message, .error-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .add-course-form-container h1 {
+            color: #0f4c75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .add-course-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .input-group {
+            width: 48%;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0f4c75;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #0f4c75;
+            transform: scale(1.02);
+        }
+
+        .course-dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-50%); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 16px;
+            color: #0f4c75;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dropdown-button:hover {
+            background-color: #d1e7fd;
+            transform: scale(1.02);
+        }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .dropdown-item {
+            padding: 12px;
+            cursor: pointer;
+            color: #0f4c75;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #748d9e;
+        }
+
+        .add-course-btn {
+            padding: 15px;
+            background-color: #0f4c75;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 18px;
+            width: 100%;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .add-course-btn:hover {
+            background-color: #3282b8;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                width: 100%;
+            }
+
+            .add-course-form-container {
+                padding: 20px;
+            }
+        }
+
+
+        .success-message, .error-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="add-course-form-container">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
+            <img src="{% static 'Images/School logo.jpg' %}" alt="School Logo" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+        </div>
+        <h1>Assign Course to Instructor</h1>
+
+        <form id="add-course-form">
+            {% csrf_token %}
+            
+            <div class="course-dropdown">
+                <div class="dropdown-button" id="dropdown-button">Select Course</div>
+                <div class="dropdown-list" id="dropdown-list"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="course-id">Course ID:</label>
+                <input type="number" id="course_id" name="course_id" readonly>
+            </div>
+
+            <div class="input-group">
+                <label for="course-level">Course Level:</label>
+                <input type="text" id="course_level" name="course_level" readonly>
+            </div>
+
+            <div class="input-group">
+                <label for="teacher-id">Instructor ID:</label>
+                <input type="number" id="teacher_id" name="teacher_id" required>
+            </div>
+
+            <button type="button" class="add-course-btn" id="submit-btn">Assign</button>
+
+            <div id="message-container"></div>
+        </form>
+    </div>
+
+    <script>
+        const dropdownButton = document.getElementById('dropdown-button');
+        const dropdownList = document.getElementById('dropdown-list');
+        const submitBtn = document.getElementById('submit-btn');
+        const messageContainer = document.getElementById('message-container');
+
+        dropdownButton.onclick = function() {
+            fetchCourses();
+        };
+
+        function fetchCourses() {
+            fetch('/fetchcoursesLists/')
+                .then(response => response.json())
+                .then(data => {
+                    dropdownList.innerHTML = '';
+                    data.forEach(course => {
+                        const item = document.createElement('div');
+                        item.classList.add('dropdown-item');
+                        item.innerText = course.name;
+                        item.onclick = function() {
+                            selectCourse(course.id, course.name, course.level);
+                        };
+                        dropdownList.appendChild(item);
+                    });
+                    dropdownList.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching courses:', error);
+                });
+        }
+
+        function selectCourse(courseId, courseName, courseLevel) {
+            dropdownButton.innerText = courseName;
+            dropdownList.style.display = 'none';
+            document.getElementById('course_id').value = courseId;
+            document.getElementById('course_level').value = courseLevel;
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-button')) {
+                dropdownList.style.display = 'none';
+            }
+        };
+
+        submitBtn.onclick = function() {
+            const courseId = document.getElementById('course_id').value;
+            const teacherId = document.getElementById('teacher_id').value;
+
+            const formData = new FormData();
+            formData.append('course_id', courseId);
+            formData.append('teacher_id', teacherId);
+
+            fetch("{% url 'AssignTeacherCourse' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessage(data.message, data.status === "success" ? "success-message" : "error-message");
+            })
+            .catch(error => {
+                showMessage("An error occurred while assigning the course.", "error-message");
+                console.error("Error:", error);
+            });
+        };
+
+
+        // Display message function
+        function showMessage(message, type) {
+            messageContainer.innerHTML = `<div class="${type}"><p>${message}</p></div>`;
+            setTimeout(() => {
+                messageContainer.innerHTML = ''; // Clear message after 5 seconds
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

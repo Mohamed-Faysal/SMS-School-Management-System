@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Delivered</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2575fc, #2575fc);
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            color: #2575fc;
+            margin-bottom: 30px;
+        }
+
+        .student-submission {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            background: #f9fbff;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .student-submission:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .student-info img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 3px solid #2575fc;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-info-details h2 {
+            font-size: 1.8rem;
+            color: #2575fc;
+            margin-bottom: 5px;
+        }
+
+        .student-info-details p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .questions-container {
+            margin-top: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #eef1f7;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .question h3 {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .option {
+            margin-left: 20px;
+            font-size: 1rem;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+
+        .student-answer {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #eef1f5;
+        }
+
+        .student-answer pre {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a73e8;
+            background: transparent;
+            padding: 10px; 
+            border: none; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            box-sizing: border-box; 
+        }
+
+        .grade-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .grade-form input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .grade-form input[type="number"]:focus {
+            border: 1px solid #6a11cb;
+        }
+
+        .grade-form button {
+            padding: 10px 20px;
+            background: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .grade-form button:hover {
+            background: #2575fc;
+        }
+
+        .confirm-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .confirm-button:hover {
+            background: #218838;
+        }
+
+        .confirmation-message {
+            color: green;
+            margin-left: 10px;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Delivered: Quiz {{ QuizNumber }}</h1>
+
+        {% for Student in StudentInfo %}
+        <div class="student-submission">
+            <div class="student-info">
+                <img src="data:image/jpeg;base64,{{ Student.StudentImage }}" alt="Student Photo">
+                <div class="student-info-details">
+                    <h2>{{ Student.StudentName }}</h2>
+                    <h2> {{ Student.StudentID }}</h2>
+                </div>
+            </div>
+
+            <div class="questions-container">
+                {% for question_id, question in questions.items %}
+                <div class="question">
+                    <h3>{{ question.text }} ({{ question.marks }} Marks)</h3>
+
+                    {% if question.type == "mcq" %}
+                    <ul>
+                        {% for option in question.options %}
+                        <li class="option {% if option.is_correct %}correct{% endif %}">{{ option.text }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div class="student-answer">
+                        <h4>Answer:</h4>
+                        {% for student_id, student_answers in answers.items %}
+                        {% if student_id == Student.StudentID %}
+                        {% for qid, answer_data in student_answers.items %}
+                        {% if qid == question_id %}
+                        {% if answer_data.type == "written" %}
+                        <pre>{{ answer_data.written_answer }}</pre>
+                        {% elif answer_data.type == "mcq" %}
+                        <p>Selected: {{ answer_data.selected_option_text }}</p>
+                        {% endif %}
+                        <div class="grade-form">
+                            <input type="number" class="grade-input" data-student-id="{{ student_id }}" data-question-id="{{ question_id }}" min="0" max="{{ question.marks }}" placeholder="Grade">
+                            <button class="save-grade" onclick="saveGrade(event)">Save</button>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% if question_id not in student_answers %}
+                        <p>No answer submitted.</p>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <a class="confirm-button" onclick="confirmGrades({{ Student.StudentID }})">Confirm Grades</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <footer>
+        <p>&copy; {{ year }} Quiz Management System</p>
+    </footer>
+
+    <script>
+        const grades = {};
+
+        window.addEventListener("load", function () {
+            const submissions = document.querySelectorAll(".student-submission");
+            submissions.forEach((submission, index) => {
+                setTimeout(() => {
+                    submission.style.opacity = 1;
+                    submission.style.transform = "translateY(0)";
+                }, index * 200);
+            });
+        });
+
+        function saveGrade(event) {
+            event.preventDefault();
+
+            const button = event.target;
+            const input = button.previousElementSibling;
+            const studentId = input.dataset.studentId;
+            const questionId = input.dataset.questionId;
+            const grade = input.value;
+
+            if (!grade) {
+                alert("Please enter a grade!");
+                return;
+            }
+
+            if (!grades[studentId]) grades[studentId] = {};
+            grades[studentId][questionId] = grade;
+
+            const msg = document.createElement("span");
+            msg.className = "confirmation-message";
+            msg.textContent = "Grade saved!";
+            button.parentElement.appendChild(msg);
+
+            setTimeout(() => msg.remove(), 2000);
+
+            console.log(grades);
+        }
+
+        function confirmGrades(studentId) {
+            const studentGrades = grades[studentId];
+
+            fetch("/confirm-grades/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ studentId, grades: studentGrades }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    alert(data.message || `Grades for Student ${studentId} confirmed!`);
+                })
+                .catch((err) => console.error(err));
+        }
+
+    </script>
+</body>
+</html>

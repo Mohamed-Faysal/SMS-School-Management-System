@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #4e79a7, #1d3557);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 40px;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            animation: slideIn 1.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .student-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            margin-bottom: 20px;
+            transition: transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .student-row:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffffff;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-image:hover {
+            transform: scale(1.1);
+        }
+
+        .student-details {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .student-details p {
+            margin: 10px 0;
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        .student-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .view-profile-btn {
+            padding: 12px 25px;
+            background-color: #1d3557;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s ease-in-out;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .view-profile-btn:hover {
+            background-color: #4e79a7;
+            transform: translateY(-4px);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .student-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .student-image {
+                margin-bottom: 15px;
+            }
+
+            .student-details {
+                text-align: center;
+                padding-left: 0;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Students Information</h1>
+        {% for StudentRecord in StudentRecords %}
+        <div class="student-row">
+            <img src="data:image/jpeg;base64,{{ StudentRecord.StudentImage }}" alt="Student Image" class="student-image">
+            <div class="student-details">
+                <p class="student-name">Name: {{StudentRecord.StudentName}}</p>
+                <p class="student-id">ID: {{StudentRecord.StudentID}}</p>
+                <p class="student-level">Level: {{StudentRecord.StudentLevel}}</p>
+                <p class="Class">Class: {{StudentRecord.StudentClass}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Adding alert for the "View Profile" button
+        document.querySelectorAll('.view-profile-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('Viewing profile details...');
+            });
+        });
+    </script>
+</body>
+</html>

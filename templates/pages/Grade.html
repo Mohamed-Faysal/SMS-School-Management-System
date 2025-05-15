@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+    <title>Course Grades</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(-45deg, #3282b8, #0f4c75, #1b262c, #3282b8);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            width: 80%;             
+            max-width: 1200px;      
+            padding: 20px;          
+            animation: fadeIn 1s ease-in-out;
+            background: #ffffff;   
+            border-radius: 10px;    
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-top: -370px; /* Adjust this value as needed to move it up */
+        }
+
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #0f4c75;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 1s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #3282b8;
+        }
+
+        .sidebar .logo img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            padding: 22px 20px;
+        }
+
+        .sidebar nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #3282b8;
+            transform: translateX(10px);
+        }
+
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(to right, #3282b8, #0f4c75);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.8s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            font-size: 20px;
+        }
+
+        .header img {
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 70px;
+            height: 70px;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: slideUp 1s ease-in-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .grades-table th,
+        .grades-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .grades-table th {
+            background: linear-gradient(to right, #0f4c75, #3282b8);
+            color: #fff;
+        }
+
+        .grades-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .grades-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f0fe;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary h3 {
+            font-size: 22px;
+            color: #0f4c75;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .grades-table th,
+            .grades-table td {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .grades-table {
+                font-size: 12px;
+            }
+
+            .summary h3 {
+                font-size: 18px;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                display: flex;
+                justify-content: space-around;
+                padding: 10px 0;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    {% for StudentInfo in StudentRecord %}
+    {% for CourseInfo in CourseRecord %}
+    {% for Count in AnnouncementNum %}
+
+
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="data:image/jpeg;base64,{{ StudentInfo.StudentImage }}" alt="Student Photo">
+                <div>
+                    <h1>Student Name: {{ StudentInfo.StudentName }}</h1>
+                    <h1>Student ID: {{ StudentInfo.StudentID }}</h1>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <h1>Course Name: {{ CourseInfo.1 }}</h1>
+                <h1>Course ID: {{ CourseInfo.0 }}</h1>
+            </div>
+        </div>
+
+        <!-- Grades Table Section -->
+        <table class="grades-table">
+            <thead>
+                <tr>
+                    <th>Criteria</th>
+                    <th>Grade</th>
+                    <th>Out of</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for AssignmentGrade in AssignmentGradeRecord %}
+                <tr>
+                    <td>Homework {{ AssignmentGrade.AssignmentNumber }}</td>
+                    <td>{{ AssignmentGrade.MarksObtained }}</td>
+                    <td>{{ AssignmentGrade.TotalMarks }}</td>
+                </tr>
+            {% endfor %}
+
+            {% for QuizGrade in QuizGradeRecord %}
+                <tr>
+                    <td>Quiz {{ QuizGrade.QuizNumber }}</td>
+                    <td>{{ QuizGrade.MarksObtained }}</td>
+                    <td>{{ QuizGrade.TotalMarks }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const gradeRows = document.querySelectorAll(".grades-table tbody tr");
+
+            const getGradeColor = (grade, outOf) => {
+                const halfOutOf = outOf / 2;
+                const closeToOutOf = outOf * 0.9; // Adjust as needed for "close" threshold (e.g., 90%)
+
+                if (grade >= closeToOutOf) return "#2e8b57"; // Green
+                if (grade >= halfOutOf) return "#f4a261";   // Orange
+                return "#c0392b";                          // Red
+            };
+
+            gradeRows.forEach((row) => {
+                const gradeCell = row.querySelector("td:nth-child(2)");
+                const outOfCell = row.querySelector("td:nth-child(3)");
+
+                if (gradeCell && outOfCell) {
+                    const grade = parseFloat(gradeCell.textContent);
+                    const outOf = parseFloat(outOfCell.textContent);
+
+                    // Apply the color based on the grade's proximity to the "Out of" value
+                    gradeCell.style.color = getGradeColor(grade, outOf);
+                    gradeCell.style.fontWeight = "bold";
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

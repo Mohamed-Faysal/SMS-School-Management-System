@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% csrf_token %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher: Create Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #2c3e50, #3498db);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            height: 80px; /* Larger Question Box */
+        }
+
+        #questions-container > div {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+            position: relative;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #27ae60;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #219150;
+        }
+
+        .preview-container {
+            margin-top: 30px;
+        }
+
+        .preview-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f1f1f1;
+        }
+
+        .preview-question p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .preview-question textarea {
+            width: 100%;
+            height: 100px;
+        }
+
+        .delete-btn, .edit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover, .edit-btn:hover {
+            background: darkred;
+        }
+
+        .large-textbox {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .mcq-options-input {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Quiz</h1>
+        <form id="quiz-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="quiz-name">Quiz Name:</label>
+                <input type="text" id="quiz-name" name="quiz_name" placeholder="Enter quiz name" required>
+            </div>
+
+            <div id="questions-container"></div>
+
+            <div class="form-group">
+                <input type="button" value="Add Question" onclick="addQuestion()">
+            </div>
+
+            <div class="form-group">
+                <button class="btn" type="button" onclick="previewQuiz()">Preview Quiz</button>
+                <button class="btn" type="button" onclick="deleteQuiz()">Delete Quiz</button>
+            </div>
+        </form>
+
+        <!-- Preview Section -->
+        <div id="preview-container" class="preview-container" style="display: none;">
+            <h2>Quiz Preview</h2>
+            <div id="preview-questions"></div>
+            <div class="form-group">
+                <button class="btn" type="button" onclick="submitQuiz()">Upload Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questionCount = 0;
+
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+
+            const questionDiv = document.createElement('div');
+            questionDiv.id = `question-${questionCount}`;
+            questionDiv.innerHTML = `
+                <label>Question Text:</label>
+                <textarea class="large-textbox" name="questions[${questionCount}][text]" required></textarea>
+
+                <label>Question Type:</label>
+                <select name="questions[${questionCount}][type]" onchange="toggleOptions(${questionCount})">
+                    <option value="written">Written</option>
+                    <option value="mcq">MCQ</option>
+                </select>
+
+                <div id="mcq-options-${questionCount}" style="display: none;">
+                    <label>Options (comma-separated):</label>
+                    <textarea class="mcq-options-input" name="questions[${questionCount}][options]"></textarea>
+                    <label>Correct Option Index (e.g., 0 for the first option):</label>
+                    <input type="number" name="questions[${questionCount}][correct_option]">
+                </div>
+
+                <label>Mark:</label>
+                <input type="number" name="questions[${questionCount}][mark]" required>
+
+                <button type="button" class="edit-btn" onclick="editQuestion(${questionCount})">Edit</button>
+                <button type="button" class="delete-btn" onclick="deleteQuestion(${questionCount})">Delete</button>
+            `;
+            container.appendChild(questionDiv);
+            questionCount++;
+        }
+
+        function toggleOptions(count) {
+            const mcqOptions = document.getElementById(`mcq-options-${count}`);
+            const selectElement = document.querySelector(`select[name="questions[${count}][type]"]`);
+            mcqOptions.style.display = selectElement.value === 'mcq' ? 'block' : 'none';
+        }
+
+        function previewQuiz() {
+            const container = document.getElementById('preview-container');
+            const previewQuestions = document.getElementById('preview-questions');
+            previewQuestions.innerHTML = '';
+
+            const quizName = document.getElementById('quiz-name').value;
+            const questions = document.querySelectorAll('#questions-container > div');
+
+            if (!quizName || questions.length === 0) {
+                alert('Please provide a quiz name and at least one question.');
+                return;
+            }
+
+            questions.forEach((questionDiv, index) => {
+                const questionText = questionDiv.querySelector('textarea').value;
+                const questionType = questionDiv.querySelector('select').value;
+                const questionMark = questionDiv.querySelector('input[name*="[mark]"]').value;
+
+                const previewDiv = document.createElement('div');
+                previewDiv.classList.add('preview-question');
+
+                let content = `<p>${index + 1}. ${questionText} (${questionMark} Marks)</p>`;
+                if (questionType === 'mcq') {
+                    const options = questionDiv.querySelector('textarea[name*="[options]"]').value.split(',');
+                    content += '<ul>';
+                    options.forEach((option, optIndex) => {
+                        const label = String.fromCharCode(65 + optIndex); // Convert 0 -> 'A', 1 -> 'B', etc.
+                        content += `
+                            <li>
+                                <label>
+                                 ${label}. <input type="radio" name="preview-q${index}" value="${optIndex}">
+                                    ${option.trim()}
+                                </label>
+                            </li>`;
+                    });
+                    content += '</ul>';
+                } else if (questionType === 'written') {
+                    content += '<textarea placeholder="Write your answer here"></textarea>';
+                }
+
+                previewDiv.innerHTML = content;
+                previewQuestions.appendChild(previewDiv);
+            });
+
+            container.style.display = 'block';
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function submitQuiz() {
+            const quizName = document.getElementById('quiz-name').value;
+            const questions = [];
+            const questionElements = document.querySelectorAll('#questions-container > div');
+            const teacherId = parseInt('{{ TecherID }}'); 
+            const courseId = parseInt('{{ CourseID }}'); 
+
+            questionElements.forEach((questionDiv, index) => {
+                const questionText = questionDiv.querySelector('textarea').value;
+                const questionType = questionDiv.querySelector('select').value;
+                const questionMark = questionDiv.querySelector('input[name*="[mark]"]').value;
+
+                let options = [];
+                let correctOption = null;
+                
+                if (questionType === 'mcq') {
+                    options = questionDiv.querySelector('textarea[name*="[options]"]').value.split(',').map(option => option.trim());
+                    correctOption = questionDiv.querySelector('input[name*="[correct_option]"]').value;
+                }
+
+                questions.push({
+                    text: questionText,
+                    type: questionType,
+                    mark: questionMark,
+                    options: options,
+                    correct_option: correctOption
+                });
+            });
+
+            const data = {
+                quiz_name: quizName,
+                questions: questions,
+                TeacherID: teacherId,
+                CourseID: courseId
+            };
+
+
+            const csrftoken = getCookie('csrftoken');
+            fetch('/quiz-insertion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById('quiz-form').reset();
+                    document.getElementById('questions-container').innerHTML = '';
+                    document.getElementById('preview-container').style.display = 'none';
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                alert('Quiz submission failed. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function deleteQuiz() {
+            const confirmation = confirm("Are you sure you want to delete the entire quiz?");
+            if (confirmation) {
+                document.getElementById('quiz-form').reset();
+                document.getElementById('questions-container').innerHTML = '';
+                document.getElementById('preview-container').style.display = 'none';
+            }
+        }
+
+        function deleteQuestion(count) {
+            const questionDiv = document.getElementById(`question-${count}`);
+            questionDiv.remove();
+        }
+
+        function editQuestion(count) {
+            const questionDiv = document.getElementById(`question-${count}`);
+            const questionText = questionDiv.querySelector('textarea').value;
+            const questionType = questionDiv.querySelector('select').value;
+            const options = questionDiv.querySelector('input[name*="[options]"]').value;
+            const correctOption = questionDiv.querySelector('input[name*="[correct_option]"]').value;
+            const mark = questionDiv.querySelector('input[name*="[mark]"]').value;
+
+            // Open a prompt or dialog to allow the teacher to modify the question
+            const newText = prompt("Edit Question Text", questionText);
+            const newMark = prompt("Edit Marks", mark);
+
+            if (newText !== null && newMark !== null) {
+                questionDiv.querySelector('textarea').value = newText;
+                questionDiv.querySelector('input[name*="[mark]"]').value = newMark;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Add Course</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(to bottom right, #0f4c75, #3282b8);
+        }
+
+        .add-student-form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+        }
+
+        h1 {
+            color: #0f4c75;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            animation: fadein 0.5s ease-out, fadeout 0.5s 4.5s ease-in;
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeout {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .add-student-btn {
+            padding: 12px 20px;
+            background-color: #0f4c75;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .add-student-btn:hover {
+            background-color: #1b6b99;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #0f4c75;
+            outline: none;
+        }
+
+        .custom-file-upload {
+            display: none;
+        }
+
+        /* Icon styling */
+        .file-upload-icon {
+            font-size: 28px;
+            color: #0f4c75;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 5px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .file-upload-icon:hover {
+            color: #1b6b99;
+        }
+
+        /* Tooltip styling */
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            top: 50%;
+            left: 35px; /* Adjusts horizontal position */
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 14px;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+
+        /* Show tooltip on hover */
+        .file-upload-icon:hover .tooltip,
+        .file-upload-icon:focus .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .file-name {
+            font-size: 14px;
+            color: #0f4c75;
+            margin-left: 10px; /* Adjust spacing as needed */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="add-student-form-container">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
+            <img src="{% static 'Images/School logo.jpg' %}" alt="School Logo" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+        </div>
+        <h1>Add a New Course</h1>
+
+        <form class="add-student-form" id="add-student-form" method="post" action="{% url 'add_course' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="course-name">Course Name:</label>
+                <input type="text" id="course_name" name="course_name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="course-id">Course ID:</label>
+                <input type="number" id="course_id" name="course_id" required >
+            </div>
+
+
+           <div class="input-group">
+                <label for="course-level">Course level:</label>
+                <input type="text" id="course_level" name="course_level" required>
+            </div>
+
+            <div class="input-group">
+                <label for="student_image">Course Image</label>
+                <input type="file" id="course_image" name="course_image" class="custom-file-upload" accept="image/*" required onchange="showStudentFileName()">
+                <label for="course_image" class="file-upload-icon" tabindex="0">
+                    <i class="fas fa-plus-circle"></i>
+                    <span class="tooltip">Select an image</span>
+                </label>
+                <span class="file-name"></span>
+            </div>
+            <button type="submit" class="add-student-btn">Add Course</button>
+            
+        </form>
+
+        {% if messages %}
+            <div class="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Auto-hide the alert after 5 seconds
+        setTimeout(function() {
+            let alertBox = document.querySelector('.alert');
+            if (alertBox) {
+                alertBox.style.display = 'none';
+            }
+        }, 5000);
+
+
+        document.querySelector('.file-upload-icon').addEventListener('touchstart', function() {
+        const tooltip = this.querySelector('.tooltip');
+        tooltip.style.visibility = 'visible';
+        tooltip.style.opacity = '1';
+    });
+
+    document.querySelector('.file-upload-icon').addEventListener('touchend', function() {
+        const tooltip = this.querySelector('.tooltip');
+        tooltip.style.visibility = 'hidden';
+        tooltip.style.opacity = '0';
+    });
+
+
+    function showStudentFileName() {
+        const fileInput = document.getElementById('course_image');
+        const fileNameDisplay = document.querySelector('.input-group .file-name');
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = fileInput.files[0].name;
+        }
+    }
+
+    $(document).ready(function() {
+        // Handle form submission using AJAX
+        $('#add-student-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Use AJAX to submit the form
+            $.ajax({
+                url: $(this).attr('action'), // The URL to send the request to
+                type: 'POST',
+                data: new FormData(this), // Form data including file
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // On success, display the success message
+                    var alertBox = $('<div class="alert">Student added successfully</div>');
+                    
+                    // Append the alert box below the 'Add Student' button
+                    $('.add-student-btn').after(alertBox); // This places the alert below the button
+                    
+                    alertBox.css({
+                        'background-color': '#4CAF50',
+                        'color': 'white',
+                        'padding': '15px',
+                        'text-align': 'center',
+                        'border-radius': '4px',
+                        'margin-top': '20px'
+                    });
+
+                    // Fade out the alert after 5 seconds
+                    setTimeout(function() {
+                        alertBox.fadeOut(function() {
+                            $(this).remove(); // Remove the alert box after it fades out
+                        });
+                    }, 5000);
+
+                    // Optionally, clear the form fields
+                    $('#add-student-form')[0].reset();
+                },
+                error: function(xhr, status, error) {
+                    // In case of an error, you can handle it here
+                    alert('An error occurred: ' + error);
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

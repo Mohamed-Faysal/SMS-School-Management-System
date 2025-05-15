@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student: Take Quiz</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #1e3c72, #2a5298);
+            color: #fff;
+            overflow-x: hidden;
+            animation: fadeIn 1.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            color: #333;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(20px); opacity: 1; }
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .submitted-message {
+            color: red; /* Make the text red */
+            font-size: 24px; /* Adjust the font size for visibility */
+            text-align: center; /* Center text horizontally */
+            position: absolute; /* Position the message absolutely */
+            top: 50%; /* Move it 50% down from the top */
+            left: 50%; /* Move it 50% from the left */
+            transform: translate(-50%, -50%); /* Adjust position to truly center */
+            font-family: Arial, sans-serif; /* Optional: Choose a clean font */
+        }
+
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #1e3c72;
+            outline: none;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            background: #27ae60;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background: #219150;
+            transform: translateY(-3px);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .question h3 {
+                font-size: 1rem;
+            }
+
+            .timer {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if Flag == 0 %}
+    <div class="container">
+        <h1>{{ quiz_name }}</h1>
+        <div class="timer" id="timer">Time Remaining: </div>
+        <form id="quiz-form">
+            {% csrf_token %}
+            <input type="hidden" id="student-id" value="{{ StudentID }}">
+            <div id="questions-container">
+                {% for question in questions %}
+                <div class="question" data-id="{{ question.id }}">
+                    <h3>{{ forloop.counter }}. {{ question.text }} ({{ question.marks }} Marks)</h3>
+                    {% if question.type == "mcq" %}
+                    <ul>
+                        {% for option in question.options %}
+                        <li>
+                            <label>
+                                <input type="radio" name="answer-{{ question.id }}" value="{{ option.0 }}">
+                                {{ option.1 }}
+                            </label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% elif question.type == "written" %}
+                    <textarea name="answer-{{ question.id }}" placeholder="Write your answer here"></textarea>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <p id="error-message" class="error-message">Please answer all questions before submitting.</p>
+            </div>
+            <div class="form-group">
+                <button class="btn" type="button" onclick="submitQuiz()">Submit Quiz</button>
+            </div>
+        </form>
+    </div>
+    {% elif Flag == 1  %}
+    <div class="submitted-message">
+        Quiz was submitted
+    </div>
+    
+
+    {% endif %}
+
+    <script>
+        let timerDuration = 180; // 3 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const timerKey = 'quiz_timer';
+        
+        // Initialize timer from localStorage or set it to the default duration
+        let timeLeft = parseInt(localStorage.getItem(timerKey)) || timerDuration;
+    
+        // Countdown Timer
+        const countdown = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Time Remaining: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+            timeLeft--;
+            localStorage.setItem(timerKey, timeLeft); // Save remaining time in localStorage
+    
+            if (timeLeft < 0) {
+                clearInterval(countdown);
+                localStorage.removeItem(timerKey); // Clear timer from localStorage
+                alert('Time is up! The quiz has ended.');
+                submitQuiz(); // Automatically submit the quiz
+            }
+        }, 1000);
+    
+        // Function to submit the quiz
+        function submitQuiz() {
+            // Clear the timer from localStorage upon submission
+            localStorage.removeItem(timerKey);
+    
+            const answers = {};
+            let allAnswered = true;
+    
+            // Collect answers from the form
+            document.querySelectorAll('.question').forEach(questionDiv => {
+                const questionId = questionDiv.getAttribute('data-id');
+                const answerElement = questionDiv.querySelector('input:checked, textarea');
+
+                if (answerElement && answerElement.value.trim() !== '') {
+                    answers[questionId] = answerElement.value.trim();
+                } else {
+                    allAnswered = false;
+                }
+            });
+    
+            // Show error if not all questions are answered
+            const errorMessage = document.getElementById('error-message');
+            if (!allAnswered) {
+                errorMessage.style.display = 'block';
+                return;
+            } else {
+                errorMessage.style.display = 'none';
+            }
+
+            // Submit answers using fetch
+            fetch('/submit_quiz/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    answers: answers,
+                    studentId: parseInt('{{ StudentID }}')
+                }) 
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to submit quiz');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                alert('Failed to submit quiz. Please try again.');
+                console.error(error);
+            });
+        }
+
+
+        
+    </script>
+</body>
+</html>

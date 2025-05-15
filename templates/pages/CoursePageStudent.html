@@ -1,0 +1,525 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+    <title>School Management System Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+    
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: #0f4c75;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    
+        .sidebar .logo {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #3282b8;
+        }
+    
+        .sidebar .logo img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+    
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    
+        .sidebar nav ul li {
+            padding: 30px 20px;
+            text-align: left;
+        }
+    
+        .sidebar nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            padding: 15px;
+        }
+    
+        .sidebar nav ul li a:hover {
+            background-color: #3282b8;
+        }
+    
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+    
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #82b4d1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .header h1 {
+            font-size: 24px;
+            color: #0f4c75;
+            margin-bottom: 10px;
+        }
+    
+        .header .date-time {
+            font-size: 18px;
+            color: #555;
+        }
+    
+        .materials {
+            display: flex;
+            flex-direction: column; /* Change to column for full-width cards */
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%; /* Ensure it takes full width */
+        }
+    
+        .material-card {
+            background-color: #82b4d1;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%; /* Set to full width */
+            position: relative;
+            transition: transform 0.3s; /* Animation on hover */
+        }
+    
+        .material-card:hover {
+            transform: scale(1.02); /* Slightly enlarge on hover */
+        }
+    
+        .material-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    
+        .material-header img {
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+        }
+    
+        .material-header .publisher-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+        }
+    
+        .material-header .publisher-info .name,
+        .material-header .publisher-info .date {
+            font-weight: bold;
+            color: #0f4c75;
+        }
+    
+        .material-description {
+            font-family: 'Times New Roman', Times, serif; /* Set the font family */
+            margin-bottom: 10px;
+            color: #000000;
+            margin-left: 10px;
+        }
+    
+        .material-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    
+        .material-content .material-item {
+            background-color: #82b4d1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    
+        .material-content .material-item img,
+        .material-content .material-item video,
+        .material-content .material-item audio {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    
+        .material-content .material-item video {
+            display: block; /* Ensures the video is treated as a block element */
+            margin: 0 auto; /* Centers the video horizontally */
+            max-width: 60%; /* Adjust size as needed */
+            max-height: 200px; /* Set a height limit */
+            border-radius: 8px; /* Rounded corners */
+            border: 5px solid #3282b8; /* Great border color and width */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: adds shadow for depth */
+}
+
+    
+        .material-content a {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background-color: #3282b8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+    
+        .image-thumbnail {
+            width: 150px;
+            height: auto;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.2s ease-in-out;
+        }
+    
+        .image-thumbnail:hover {
+            transform: scale(1.1);
+        }
+    
+        .pdf-thumbnail {
+            width: 50px; /* Adjust the size for the PDF icon */
+            height: auto; /* Maintain aspect ratio */
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.2s ease-in-out;
+        }
+    
+        .empty-message {
+            text-align: center;
+            font-size: 18px;
+            color: #0f4c75;
+            padding: 20px;
+        }
+    
+        .options-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+    
+        .options-list {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 1;
+        }
+    
+        .options-list.visible {
+            display: block;
+        }
+    
+        .options-list li {
+            padding: 10px;
+            list-style: none;
+        }
+    
+        .options-list li a {
+            text-decoration: none;
+            color: #0f4c75;
+            display: block;
+        }
+    
+        .options-list li:hover {
+            background-color: #f0f0f0;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+            margin-bottom: 20px; /* Space below the image */
+        }
+
+        .logo-container img {
+            width: 80px; /* Set desired width */
+            height: 80px; /* Set height to match width for a circular look */
+            border-radius: 50%; /* Make the image circular */
+            object-fit: cover; /* Maintain aspect ratio */
+            animation: float 2s infinite ease-in-out;
+        }
+
+
+        .thumbnail {
+    width: 150px; /* Small size for thumbnails */
+    height: auto;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.thumbnail:hover {
+    transform: scale(1.1);
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+}
+
+.modal-content {
+    margin:8%;
+    margin-left: 350px;
+    display: block;
+    width: 100%; /* Width of the modal image */
+    max-width: 1000px; /* Max width */
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.pdf-modal-content {
+    margin: 3px; /* No margin to ensure it fits well */
+    height: calc(100% - 40px); /* Reduce height to create space at the top */
+    top: 20px; /* Move it down from the top of the modal */
+  /* Allow top positioning */
+}
+
+
+.notification-count {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+
+.notification-count2 {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 0.8em;
+    position: absolute;
+    right: 45%;           
+    top: 66%;           
+    transform: translateY(-50%);  
+}
+
+@keyframes float {
+        0% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+</style>
+    
+    
+</head>
+<body>
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Modal Image">
+    </div>
+
+    <div id="pdfModal" class="modal" onclick="closePdfModal()">
+        <span class="close" onclick="closePdfModal()">&times;</span>
+        <iframe id="pdfContent" class="pdf-modal-content" style="width: 100%;" frameborder="0"></iframe>
+    </div>
+    
+    
+    
+    
+        {% for Course in CourseRecord %}
+        {% for StudentInfo in StudentRecord %}
+        {% for Count in AnnouncementNum %}
+        {% for Count2 in QuizNum %}
+
+
+        <div class="sidebar">
+            <div class="logo">
+                <img src="data:image/jpeg;base64,{{ StudentInfo.StudentImage }}" alt="Publisher Photo" >
+
+                <h1>{{ StudentInfo.StudentName }}</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    {% if Count.0 != 0 %}
+                    <li><a href="{% url 'CourseAnnouncement' StudentInfo.StudentId Course.0 %}"><i class="fas fa-bullhorn"></i> Announcements
+                        <span class="notification-count">{{ Count.0 }}</span>
+                    </a></li> 
+                    {% else %}
+                    <li><a href=" {% url 'CourseAnnouncement' StudentInfo.StudentId Course.0 %} "><i class="fas fa-bullhorn"></i> Announcements</a></li>
+                    {% endif %}                    
+                    <li><a href="{% url 'CourseAttendanceHistory' Course.0 StudentInfo.StudentId %}"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                    {% if Count2.0 != 0 %}
+                    <li><a href="{% url 'take_quiz' StudentInfo.StudentId Course.0 %}"><i class="fas fa-question-circle"></i> Quiz</a></li>
+                        <span class="notification-count2">{{ Count2.0 }}</span>
+                    </a></li> 
+                    {% else %}
+                    <li><a href=" {% url 'take_quiz' StudentInfo.StudentId Course.0 %} "><i class="fas fa-question-circle"></i> Quiz</a></li>
+                    {% endif %} 
+                    <li><a href="{% url 'HomeWork' Course.0 StudentInfo.StudentId %} "><i class="fas fa-book"></i> Homework</a></li>
+                    <li><a href="{% url 'Grade' Course.0 StudentInfo.StudentId %} "><i class="fas fa-graduation-cap"></i> Grade</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+
+    {% endfor %}
+
+<div class="main-content">
+    {% for Course in CourseRecord %}
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="{% static 'Images/School Logo.jpg' %}" alt="School Logo">
+        </div>
+        <h1>Welcome to the {{Course.1}} Course Page </h1>
+    </div>
+    {% endfor %}
+
+    <div class="materials">
+        {% if materials %}
+            {% for material in materials %}
+
+                <div class="material-card">
+                    <div class="material-header">
+                        <div class="publisher-info">
+                            <img src="data:image/jpeg;base64,{{ material.publisher_image }}" alt="Ix">
+
+                            <div class="name">Publisher: Dr. {{ material.publisher }}</div>
+                            <div class="date">Date: {{ material.publish_date }}</div>
+                        </div>
+                    </div>
+                    <div class="material-description"><pre>{{ material.description }}</pre></div>
+                    <div class="material-content">
+                        {% if material.material_type == 'image' %}
+                        <div class="material-item">
+                            <img src="data:image/jpeg;base64,{{ material.file_url }}" alt="Image Material" 
+                                 class="thumbnail" onclick="openModal(this.src)">
+                        </div>
+                        {% elif material.material_type == 'video' %}
+                            <div class="material-item">
+                                <video controls>
+                                    <source src="data:video/mp4;base64,{{ material.file_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        {% elif material.material_type == 'audio' %}
+                            <div class="material-item">
+                                <audio controls>
+                                    <source src="data:audio/mpeg;base64,{{ material.file_url }}" type="audio/mpeg">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                            </div>
+
+                        {% elif material.material_type == 'pdf' %}
+                            <div class="material-item">
+                                <img src="{% static 'Images/pdf.png' %}" class="pdf-thumbnail" 
+                                     onclick="openPdfModal('data:application/pdf;base64,{{ material.file_url }}')">
+                            </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="empty-message">No materials available.</div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    // Update the date and time every second
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('dateTime').textContent = now.toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+
+    function openModal(src) {
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImage.src = src;
+}
+
+function closeModal() {
+    const modal = document.getElementById("imageModal");
+    modal.style.display = "none";
+}
+
+function openPdfModal(src) {
+    const pdfModal = document.getElementById("pdfModal");
+    const pdfContent = document.getElementById("pdfContent");
+    pdfModal.style.display = "block";
+    pdfContent.src = src; // Set the source for the iframe to display the PDF
+}
+
+
+function closePdfModal() {
+    const pdfModal = document.getElementById("pdfModal");
+    pdfModal.style.display = "none";
+    const pdfContent = document.getElementById("pdfContent");
+    pdfContent.src = ""; // Clear the source to stop the PDF
+}
+
+
+</script>
+</body>
+</html>

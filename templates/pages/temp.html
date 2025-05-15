@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        /* CSS Styles for the countdown page */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #3282b8, #3282b8);
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        .countdown-container {
+            text-align: center;
+        }
+
+        .countdown-container h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .timer {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .welcome-message {
+            font-size: 1.5rem;
+            display: none; /* Initially hidden */
+        }
+
+        @media (max-width: 768px) {
+            .countdown-container h1 {
+                font-size: 2.5rem;
+            }
+            .timer {
+                font-size: 3rem;
+            }
+            .welcome-message {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Teacher_Id, CourseName, and StudentID as data attributes -->
+    <div class="countdown-container" 
+         data-teacher-id="{{ Teacher_Id }}"
+         data-Course-Id="{{ Course_Id }}" 
+         data-course-name="{{ CourseName }}" >
+
+        <h1>Attendance will start in </h1>
+        <div class="timer" id="timer">10</div>
+        <div class="welcome-message" id="welcome-message">Attendance started!</div>
+    </div>
+
+    <script>
+        // JavaScript to handle countdown
+        let countdownValue = 10; // Countdown starts at 10 seconds
+        const timerElement = document.getElementById('timer');
+        const messageElement = document.getElementById('welcome-message');
+        
+        // Get values from data attributes
+        const countdownContainer = document.querySelector('.countdown-container');
+        const teacherID = countdownContainer.getAttribute('data-teacher-id');
+        const Course_Id = countdownContainer.getAttribute('data-Course-Id');
+        const courseName = countdownContainer.getAttribute('data-course-name');
+
+        const countdown = setInterval(() => {
+            countdownValue--;
+
+            // Update the countdown timer in the DOM
+            timerElement.textContent = countdownValue;
+
+            // When countdown reaches 0, display the message and clear the interval
+            if (countdownValue <= 0) {
+                clearInterval(countdown);
+                timerElement.style.display = 'none'; // Hide the timer
+                messageElement.style.display = 'block'; // Show the message
+                
+                // Redirect with parameters in the URL
+                const url = `/TakeAttendance/${teacherID}/${Course_Id}/${courseName}/`;
+                window.location.href = url;
+            }
+        }, 1000); // Decrease timer every second
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Schedule</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'Images/School Logo.jpg' %}">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(to right, #0f4c75, #3282b8);
+            color: white;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Schedule Section */
+        .schedule {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .schedule:hover {
+            transform: scale(1.03);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* Grid Layout */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .time-slot, .day {
+            background: #1b262c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .time-slot:hover, .day:hover {
+            background: #3282b8;
+        }
+
+        .class {
+            background: #bbe1fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .class:hover {
+            transform: scale(1.1);
+            background: #0f4c75;
+            color: white;
+        }
+
+        /* Course Colors */
+        .math { background: #5f443a; }
+        .physics { background: #6495ed; }
+        .chemistry { background: #ca1e1e; }
+        .biology { background: #d1a93b; }
+        .english { background: #2c1861; }
+        .empty { background: rgba(255, 255, 255, 0.2); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <section class="schedule">
+        <h2>Weekly Courses Schedule</h2>
+        <div class="schedule-grid">
+            <div class="time-slot"></div>
+            <div class="day">Sat</div>
+            <div class="day">Sun</div>
+            <div class="day">Mon</div>
+            <div class="day">Tue</div>
+            <div class="day">Wed</div>
+            <div class="day">Thu</div>
+
+            <div class="time-slot">09:30 - 11:20</div>
+            <div class="class math">Math</div>
+            <div class="class physics">Physics</div>
+            <div class="class chemistry"></div>
+            <div class="class biology"></div>
+            <div class="class english"></div>
+            <div class="class math">Discrete</div>
+
+            <div class="time-slot">11:30 - 12:30</div>
+            <div class="class physics">Physics</div>
+            <div class="class chemistry">Computer Science</div>
+            <div class="class biology">Statistics</div>
+            <div class="class english"></div>
+            <div class="class math"></div>
+            <div class="class physics"></div>
+
+            <div class="time-slot">12:00 - 13:40</div>
+            <div class="class chemistry">Discrete</div>
+            <div class="class biology"></div>
+            <div class="class english">Statistics</div>
+            <div class="class math">Math</div>
+            <div class="class physics">Electronics</div>
+            <div class="class chemistry"></div>
+
+            <div class="time-slot">14:00 - 15:40</div>
+            <div class="class biology">Computer Science</div>
+            <div class="class english"></div>
+            <div class="class math"></div>
+            <div class="class physics">Electronics</div>
+            <div class="class chemistry"></div>
+            <div class="class biology"></div>
+
+            <div class="time-slot">15:00 - 16:00</div>
+            <div class="class english"></div>
+            <div class="class math"></div>
+            <div class="class physics"></div>
+            <div class="class chemistry"></div>
+            <div class="class biology"></div>
+            <div class="class english"></div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Delivered</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeInContainer 1s ease-in-out;
+        }
+
+        @keyframes fadeInContainer {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .student-submission {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #f7f9fc;
+            animation: fadeInSubmission 1s ease-in-out;
+        }
+
+        @keyframes fadeInSubmission {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .student-info {
+            flex: 1;
+            text-align: left;
+            margin-right: 20px;
+            padding: 15px;
+            background: #eef1f5;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-info img {
+            border-radius: 12px;
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .student-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: #1e3c72;
+        }
+
+        .student-info p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .student-answer {
+            flex: 2;
+            padding: 15px;
+        }
+
+        .student-answer h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #1e3c72;
+        }
+
+        .pdf-icon {
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #007bff;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .pdf-icon:hover {
+            color: #0056b3;
+        }
+
+        .pdf-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            animation: fadeInModal 0.5s ease-in-out;
+        }
+
+        @keyframes fadeInModal {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .pdf-modal-content {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .pdf-modal-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: black;
+            cursor: pointer;
+        }
+
+        .pdf-modal-content iframe {
+            width: 100%;
+            height: 100%;
+        }
+
+        .grade-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .grade-form input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .grade-form button {
+            padding: 10px 15px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .grade-form button:hover {
+            background: #2a5298;
+        }
+
+        .confirm-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .confirm-button:hover {
+            background: #218838;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HomeWork: {{ HomeWorkNumber }}</h1>
+        <h1>Course: {{ CourseName }}</h1>
+        {% for Student in StudentInfo %}
+        {% if Student.Flag == 0 %}
+        <div class="student-submission">
+            <div class="student-info">
+                <img src="data:image/jpeg;base64,{{ Student.StudentImage }}" alt="Student Photo">
+                <h2>{{ Student.StudentName }}</h2>
+                <p>ID: {{ Student.StudentID }}</p>
+            </div>
+
+            <div class="student-answer">
+                <h4>Answer</h4>
+                <div class="pdf-icon" onclick="openPdf('{{ Student.StudentID }}')">
+                    View PDF Answer
+                </div>
+                <div id="pdf-modal-{{ Student.StudentID }}" class="pdf-modal">
+                    <div class="pdf-modal-content">
+                        <span class="close-btn" onclick="closePdf('{{ Student.StudentID }}')">&times;</span>
+                        <iframe src="data:application/pdf;base64,{{ Student.PDF }}" frameborder="0"></iframe>
+                    </div>
+                </div>
+
+                <div class="grade-form">
+                    <input type="number" class="grade-input" data-student-id="{{ Student.StudentID }}" min="0" max="10" placeholder="Grade">
+                    <button class="save-grade" onclick="saveGrade(event)">Save</button>
+                </div>
+                <a class="confirm-button" onclick="confirmGrades( {{ Student.StudentID }}, {{ Student.AssignmentID }}, {{ Student.CourseID }}, {{ Student.TotalMark }} )">Confirm Grades</a>
+
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+    <footer>
+        <p>&copy; {{ year }} HomeWork Management System</p>
+    </footer>
+
+    <script>
+        const grades = {};
+
+        function openPdf(studentId) {
+            const modal = document.getElementById(`pdf-modal-${studentId}`);
+            if (modal) modal.style.display = "block";
+        }
+
+        function closePdf(studentId) {
+            const modal = document.getElementById(`pdf-modal-${studentId}`);
+            if (modal) modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            const modals = document.querySelectorAll(".pdf-modal");
+            modals.forEach((modal) => {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        };
+
+        function saveGrade(event) {
+            event.preventDefault();
+            const button = event.target;
+            const input = button.previousElementSibling;
+            const studentId = input.dataset.studentId;
+            const grade = input.value;
+
+            if (!grade) {
+                alert("Please enter a grade!");
+                return;
+            }
+
+            grades[studentId] = grade;
+
+            if (grades[studentId]) {
+                const msg = document.createElement("span");
+                msg.className = "confirmation-message";
+                msg.textContent = "Grade saved!";
+                button.parentElement.appendChild(msg);
+
+                setTimeout(() => msg.remove(), 2000);
+            }
+        }
+
+        function getCsrfToken() {
+            const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
+            return csrfToken ? csrfToken[1] : null;
+        }
+
+
+        function confirmGrades(studentId, AssignmentID, CourseID, TotalMark) {
+            const studentGrades = grades[studentId];
+            const csrfToken = getCsrfToken(); 
+            fetch("/SaveAssignmentGrade/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({
+                    studentId,
+                    grades: studentGrades,
+                    AssignmentID: AssignmentID,
+                    CourseID: CourseID,
+                    TotalMark: TotalMark
+                 }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    alert(data.message || `Grades for Student ${studentId} confirmed!`);
+                })
+                .catch((err) => console.error(err));
+        }
+    </script>
+</body>
+</html>
