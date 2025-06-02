@@ -93,7 +93,7 @@ Associate Professor, Information Technology Department
 
 - Abubaker Saeed Omer
 - Ibrahim Mohammed Essa
-- Mohammed Fisal
+- Mohammed Faisal
 
 ---
 
