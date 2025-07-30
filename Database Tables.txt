@@ -1,0 +1,905 @@
+CREATE DATABASE School
+
+
+
+CREATE TABLE StudentInformation (
+    Student_Name NVARCHAR(250),         
+    Student_ID INT PRIMARY KEY,         
+    Student_Age NVARCHAR(250),
+	Nationality NVARCHAR(250),       
+    Student_Level NVARCHAR(250),        
+    Student_Gender NVARCHAR(250),       
+    Student_Image VARBINARY(MAX),
+	Student_DateOfBirth NVARCHAR(250),
+	Enrolmenet_Date NVARCHAR(250),
+    Passwordd NVARCHAR(250),	
+);
+
+
+CREATE TABLE AdminAccount (
+    Admin_ID INT PRIMARY KEY,        
+    Admin_PassWord NVARCHAR(250),         
+    Admin_image VARBINARY(MAX),           
+);
+
+drop table AdminAccount 
+
+
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY,        
+    course_name NVARCHAR(250),         
+    course_level NVARCHAR(250),       
+    course_image VARBINARY(MAX),           
+);
+drop table Courses 
+
+
+CREATE TABLE CoursesList (
+    course_id INT,
+    course_name NVARCHAR(250),
+	PRIMARY KEY (course_id),
+    course_level NVARCHAR(250),       
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+         
+);
+drop table CoursesList 
+
+
+
+CREATE TABLE StudentCourses (
+    Student_ID INT,
+    course_id INT,
+    PRIMARY KEY (Student_ID, course_id),
+    FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+drop table StudentCourses 
+
+
+
+CREATE TABLE TeacherCourses (
+    Teacher_Id INT,
+    course_id INT,
+    PRIMARY KEY (Teacher_Id, course_id),
+    FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+drop table TeacherCourses 
+
+
+CREATE TABLE TeacherInformation (
+             
+    Teacher_Name NVARCHAR(250),
+	Teacher_Id INT PRIMARY KEY,
+    Teacher_Age NVARCHAR(250),
+	DateOfBrith NVARCHAR(250),
+    Teacher_Gender NVARCHAR(250),
+	Nationality NVARCHAR(250),       
+    Teacher_Image VARBINARY(MAX),
+	EnrolmentDate NVARCHAR(250),
+    Passwordd NVARCHAR(250)                
+);
+drop table TeacherInformation 
+
+
+Teacher_specialist
+Math
+English
+
+CREATE TABLE ParentInformation (
+             
+    Parent_Name NVARCHAR(250),
+	Parent_Id INT PRIMARY KEY,
+	Student_ID INT, 
+    Parent_Image VARBINARY(MAX),
+    Passwordd NVARCHAR(250)   
+	FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID), 
+
+);
+
+
+SELECT Student_ID FROM ParentInformation
+WHERE Parent_Id = 2000
+
+drop table ParentInformation 
+
+
+SELECT TOP 1 Parent_Id FROM ParentInformation ORDER BY Parent_Id DESC
+
+
+
+
+
+
+CREATE TABLE CourseContents (
+    MaterialID INT IDENTITY(1,1) PRIMARY KEY,    
+    PublisherImage VARBINARY(MAX),                
+    PublisherName NVARCHAR(250),                 
+    DateOfPublish NVARCHAR(250),                
+    DescriptionText NVARCHAR(4000),              
+    MaterialPath VARBINARY(MAX),                 
+    course_id INT,
+	Teacher_Id INT,
+	FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+drop table CourseContents 
+
+
+
+
+CREATE TABLE AttendanceList (
+    AttendanceID INT IDENTITY(1,1) PRIMARY KEY,    
+    AttendanceTime NVARCHAR( 250 ),        
+    AttendanceStatus NVARCHAR(250), 
+	CourseName NVARCHAR (250),
+	Attendance_Date NVARCHAR(250),
+    course_id INT,
+	Teacher_Id INT,
+	Student_ID INT,
+	Mark INT,
+	FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)	
+);
+drop table AttendanceList 
+
+SELECT 
+    SUM(AttendanceList.Mark) AS TotalMark
+FROM 
+    AttendanceList 
+WHERE
+    AttendanceList.course_id = 1201 AND AttendanceList.Student_ID = 20190675
+
+
+
+
+
+
+
+CREATE TABLE MediaFiles (
+    id INT PRIMARY KEY IDENTITY(1,1),         
+    file_path NVARCHAR(255) NOT NULL,         
+    file_type NVARCHAR(50) NOT NULL,          
+    uploaded_at DATETIME DEFAULT GETDATE()    
+);
+drop table MediaFiles 
+
+
+
+
+CREATE TABLE Announcement (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    publisher NVARCHAR(255) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    publish_date DATETIME DEFAULT GETDATE(),
+	publisher_image VARBINARY(MAX), 
+	pdf_file VARBINARY(MAX),
+	video_file VARBINARY(MAX),
+	Admin_ID INT,
+	Teacher_Id INT,
+	FOREIGN KEY (Admin_ID) REFERENCES AdminAccount(Admin_ID),
+);
+
+CREATE TABLE CourseAnnouncement (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    publisher NVARCHAR(255) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    publish_date DATETIME DEFAULT GETDATE(),
+	publisher_image VARBINARY(MAX), 
+	pdf_file VARBINARY(MAX),
+	video_file VARBINARY(MAX),
+	Teacher_Id INT,
+	FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+);
+
+drop table Announcement 
+
+select *from CourseAnnouncement
+
+
+CREATE TABLE CourseAnnouncement (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    publisher NVARCHAR(255) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    publish_date DATETIME DEFAULT GETDATE(),
+	publisher_image VARBINARY(MAX),
+	course_id INT,
+	Teacher_Id INT,
+    FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+drop table CourseAnnouncement 
+select * from CourseAnnouncement
+
+
+
+
+CREATE TABLE CourseAnnouncementReadStatus (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+	Student_ID INT,
+    AnnouncementId INT,  
+    IsRead BIT DEFAULT 0,
+    ReadDate DATETIME NULL,
+	FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID), 
+    FOREIGN KEY (AnnouncementId) REFERENCES CourseAnnouncement (id)
+);
+
+drop table CourseAnnouncementReadStatus 
+select * from CourseAnnouncementReadStatus
+
+
+
+
+
+SELECT COUNT(*) AS UnreadAnnouncements
+FROM CourseAnnouncementReadStatus
+WHERE Student_ID = 20190675 AND IsRead = 0;
+
+
+CREATE TABLE AnnouncementReadStatus (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Teacher_Id INT,
+	Student_ID INT,
+    AnnouncementId INT,  
+    IsRead BIT DEFAULT 0,
+    ReadDate DATETIME NULL,
+    CONSTRAINT FK_Teacher FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+	CONSTRAINT FK_Student FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID), 
+    CONSTRAINT FK_Announcement FOREIGN KEY (AnnouncementId) REFERENCES Announcement (id)
+);
+drop table AnnouncementReadStatus 
+
+
+
+
+CREATE TABLE HomeworkDelivered (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    course_id INT,
+	Student_ID INT,
+	AssignmentId INT,
+    DeliveredDate DATETIME NOT NULL,
+	FileContent VARBINARY(MAX) NOT NULL,
+	AssignmentNumber INT NOT NULL,
+	CONSTRAINT FK_Student FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID), 
+    CONSTRAINT FK_course FOREIGN KEY (course_id) REFERENCES Courses (course_id),
+	CONSTRAINT FK_assignment FOREIGN KEY (AssignmentId) REFERENCES Assignments (AssignmentId)
+
+);
+
+select *from HomeworkDelivered
+ALTER TABLE HomeworkDelivered
+ADD Flag INT DEFAULT 0;
+
+drop table HomeworkDelivered 
+
+select *from HomeworkDelivered
+
+
+
+CREATE TABLE Assignments (
+    AssignmentId INT IDENTITY(1,1) PRIMARY KEY,   
+    FileContent VARBINARY(MAX) NOT NULL,           
+    DescriptionContent NVARCHAR(MAX) NULL,             
+    DeadlineDate DATETIME NOT NULL,                 
+    CreatedAt NVARCHAR(250),
+	AssignementNumber INT, 
+	Flag INT DEFAULT 0,
+	course_id INT,
+    Teacher_Id INT,
+	PublisherImage VARBINARY(MAX),
+	TotalMark INT NOT NULL,
+    FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+drop table Assignments 
+
+
+
+
+CREATE TABLE SubmittedAssignmentFlag (
+    FlagID INT IDENTITY(1,1) PRIMARY KEY,   
+    AssignmentId INT NOT NULL,            
+	Flag INT DEFAULT 0,
+	course_id INT NOT NULL,
+    Student_ID INT NOT NULL,
+    FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id),
+	FOREIGN KEY (AssignmentId) REFERENCES Assignments(AssignmentId)
+
+);
+
+
+SELECT *FROM SubmittedAssignmentFlag
+ALTER TABLE HomeworkDelivered
+ADD Flag INT DEFAULT 0;
+
+drop table SubmittedAssignmentFlag 
+
+delete from SubmittedAssignmentFlag
+SELECT *FROM SubmittedAssignmentFlag WHERE Student_ID = 20190675
+
+
+
+
+CREATE TABLE HomeWorkGrades (
+    HomeWorkGradeID INT IDENTITY(1,1) PRIMARY KEY,  
+    AssignmentId INT NOT NULL,
+	course_id INT NOT NULL,
+    Student_ID INT NOT NULL,                 
+    TotalMarks INT NOT NULL,                
+    MarksObtained INT NOT NULL,            
+    GradedAt DATETIME DEFAULT GETDATE(),    
+    GradedBy INT NOT NULL,                  
+    FOREIGN KEY (AssignmentId) REFERENCES Assignments(AssignmentId),  
+	FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID),  
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+ALTER TABLE HomeWorkGrades
+ADD AssignmentNumber INT DEFAULT 0;
+
+select *from HomeWorkGrades where HomeWorkGradeID = 1
+Update HomeWorkGrades 
+set Flag = 0 where HomeWorkGradeID = 1
+
+ALTER TABLE HomeWorkGrades
+ADD Flag INT DEFAULT 0;
+
+CREATE TABLE Quizzes (
+    QuizID INT IDENTITY(1,1) PRIMARY KEY,  
+    Teacher_Id INT NOT NULL,
+	course_id INT NOT NULL,
+    QuizName NVARCHAR(255) NOT NULL,  
+    CreatedAt DATETIME DEFAULT GETDATE(),  
+    FOREIGN KEY (Teacher_Id) REFERENCES TeacherInformation(Teacher_Id),
+	FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+
+);
+
+
+CREATE TABLE QuizTakeStatus (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+	Student_ID INT,
+    QuizID INT,  
+    IsTaken BIT DEFAULT 0,
+    TakenDate DATETIME NULL,
+	course_id INT,
+	FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID), 
+    FOREIGN KEY (QuizID) REFERENCES Quizzes (QuizID),
+	FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+
+);
+
+drop table QuizTakeStatus 
+
+
+CREATE TABLE Questions (
+    QuestionID INT IDENTITY(1,1) PRIMARY KEY,  
+    QuizID INT NOT NULL,  
+    QuestionText NVARCHAR(1000) NOT NULL,  
+    QuestionType NVARCHAR(50) NOT NULL,  
+    Marks INT NOT NULL,  
+    CreatedAt DATETIME DEFAULT GETDATE(),  
+    FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID)  
+);
+
+
+
+CREATE TABLE Options (
+    OptionID INT IDENTITY(1,1) PRIMARY KEY,  
+    QuestionID INT NOT NULL,  
+    OptionText NVARCHAR(500) NOT NULL,  
+    IsCorrect BIT NOT NULL,  
+    FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID)  
+);
+
+
+
+
+CREATE TABLE StudentAnswers (
+  StudentID INT,
+  QuizID INT NOT NULL,
+  QuestionID INT NOT NULL,
+  AnswerType NVARCHAR(20) NOT NULL,  
+  StudentAnswer NVARCHAR(MAX) NULL,  
+  SelectedOption INT NULL,          
+  Marks INT DEFAULT 0,
+  Flag INT DEFAULT 0,
+  FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID),
+  FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID)
+);
+
+DROP TABLE StudentAnswers
+CREATE TABLE QuizGrades (
+    GradeID INT IDENTITY(1,1) PRIMARY KEY,  
+    QuizID INT NOT NULL,
+    QuizNumber INT NOT NULL,
+	QuestionID INT NOT NULL,
+    StudentID INT NOT NULL,                 
+    TotalMarks INT NOT NULL,                
+    MarksObtained INT NOT NULL,            
+    GradedAt DATETIME DEFAULT GETDATE(),    
+    GradedBy INT NOT NULL,                  
+    FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID),  
+	FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID),  
+    FOREIGN KEY (GradedBy) REFERENCES TeacherInformation(Teacher_Id)
+);
+DROP TABLE QuizGrades
+
+ALTER TABLE QuizGrades
+ADD QuizNumber INT DEFAULT 0;
+
+
+
+
+SELECT 
+    StudentID, 
+    QuizNumber, 
+    SUM(MarksObtained) AS TotalMarksObtained, 
+    SUM(TotalMarks) AS TotalQuizMarks,
+    ROUND((SUM(MarksObtained) * 100.0) / SUM(TotalMarks), 2) AS Percentage
+FROM 
+    QuizGrades
+GROUP BY 
+    StudentID, 
+    QuizNumber
+ORDER BY 
+    StudentID, 
+    QuizNumber;
+
+
+
+
+SELECT 
+    SUM(MarksObtained) AS TotalMarksObtained
+FROM 
+    HomeWorkGrades
+WHERE 
+    Student_ID = 20190675
+
+
+SELECT Student_Name, Student_Image, Student_ID, Class
+FROM StudentInformation
+ORDER BY Class, Student_ID ASC;
+
+SELECT 
+    
+    QuizNumber, 
+    SUM(MarksObtained) AS TotalMarksObtained, 
+    SUM(TotalMarks) AS TotalPossibleMarks
+FROM 
+    QuizGrades
+WHERE 
+    StudentID = 20190675
+GROUP BY 
+    StudentID, 
+    QuizNumber
+ORDER BY 
+    StudentID, 
+    QuizNumber;
+
+
+
+
+
+
+SELECT 
+    SUM(TotalMarksObtained) AS OverallTotalMarksObtained
+FROM (
+    SELECT 
+        SUM(MarksObtained) AS TotalMarksObtained
+    FROM 
+        QuizGrades
+    WHERE 
+        StudentID = 20190675
+    GROUP BY 
+        StudentID, 
+        QuizNumber
+) AS Subquery;
+
+
+
+
+
+CREATE TABLE FinalGrade(
+    FGradeID INT IDENTITY(1,1) PRIMARY KEY,
+	TotalQuizMark FLOAT,
+	TotalAssignment FLOAT,
+	MidTerm FLOAT,
+	Final FLOAT,
+	Total FLOAT,
+	ClassParticipation FLOAT,
+	ClassAttendance FLOAT,
+	Credit VARCHAR(250),
+	StudentStatus VARCHAR(250),
+	Student_ID INT,
+	course_id INT,
+	FOREIGN KEY (Student_ID) REFERENCES StudentInformation(Student_ID),
+	FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+
+)
+select *from FinalGrade
+delete from FinalGrade
+drop table FinalGrade
+FGradeID, TotalQuizMark, TotalAssignment, MidTermFinal,	ClassParticipation,	ClassAttendance, Student_ID, course_id
+SELECT 
+    g.QuizID,
+    g.StudentID,
+    SUM(g.MarksObtained) AS TotalMarksObtained,
+    SUM(g.TotalMarks) AS TotalPossibleMarks
+FROM 
+    Grading g
+GROUP BY 
+    g.QuizID, 
+    g.StudentID
+ORDER BY 
+    g.QuizID, 
+    g.StudentID;
+
+
+
+SELECT CoursesList.course_id, CoursesList.course_name, CoursesList.course_level
+FROM CoursesList INNER JOIN StudentCourses ON CoursesList.course_id = StudentCourses.course_id
+WHERE StudentCourses.Student_ID = 20190675
+
+
+2024-11-29 23:55:00.000
+
+                SELECT Teacher_Image FROM TeacherInformation 
+                WHERE Teacher_Id = 1
+
+
+
+SELECT MaterialID,  PublisherImage, PublisherName, DateOfPublish,
+DescriptionText, MaterialPath, MaterialIcon 
+FROM CourseContents
+ORDER BY  MaterialID DESC;
+
+
+SELECT Student_ID, CourseName, Attendance_Date, AttendanceTime, AttendanceStatus 
+FROM AttendanceList
+
+
+
+
+
+SELECT TOP 1 LectureNumber 
+FROM AttendanceList WHERE CourseName = 'Electronics-1204'
+ORDER BY AttendanceID DESC;
+
+select *from StudentInformation
+select *from TeacherInformation
+select *from ParentInformation
+select *from AdminAccount
+select *from CourseContents
+delete from CourseContents
+select *from Courses
+select *from CoursesList
+select *from AttendanceList
+delete from AttendanceList 
+select *from StudentCourses
+select *from TeacherCourses
+select course_id, course_name, course_level from CoursesList
+select *from MediaFiles
+select *from Announcement
+select *from CourseAnnouncement
+delete from CourseAnnouncement
+delete from CourseAnnouncementReadStatus
+
+select *from CourseAnnouncementReadStatus
+select *from Assignments
+select *from SubmittedAssignmentFlag
+SELECT COUNT(*) FROM Quizzes 
+WHERE course_id = 1201
+AssignmentId	FileContent	DescriptionContent	DeadlineDate	CreatedAt	AssignementNumber	Flag	course_id	Teacher_Id	PublisherImage	TotalMark
+SELECT TotalMark FROM Assignments WHERE AssignmentId = 14
+
+delete from SubmittedAssignmentFlag
+where Student_ID = 20190675
+
+
+SELECT Student_Name, Student_Image, Student_ID
+FROM StudentInformation
+ORDER BY Student_ID DESC;
+
+
+SELECT TOP 1 Flag FROM StudentAnswers WHERE QuizID = 22 AND StudentID = 20190675
+
+SELECT TOP 1 QuizID FROM Quizzes WHERE course_id = %s ORDER BY QuizID DESC
+
+SELECT Flag FROM HomeworkDelivered WHERE AssignmentId = 15 AND Student_ID = 20190675
+select *from TeacherInformation
+delete from TeacherInformation
+select *from HomeworkDelivered
+select *from HomeWorkGrades
+select *from QuizGrades
+select *from SubmittedAssignmentFlag
+select *from Quizzes
+select *from Questions
+select *from Options
+select *from StudentAnswers
+select *from QuizGrades
+select *from CourseAnnouncement
+select *from CourseAnnouncementReadStatus
+select *from QuizTakeStatus
+SELECT TOP 1 QuizID
+FROM Quizzes
+ORDER BY QuizID DESC;
+
+SELECT AssignmentNumber, MarksObtained, TotalMarks FROM HomeWorkGrades
+WHERE Student_ID = 20190676
+ORDER BY AssignmentNumber ASC;
+
+
+select *from HomeworkDelivered
+
+SELECT si.Student_Name, si.Student_ID, si.Student_Image, hd.FileContent,
+hd.AssignmentNumber, si.Class, hd.AssignmentId, hd.TotalMark
+FROM StudentInformation si
+INNER JOIN HomeworkDelivered hd ON si.Student_ID = hd.Student_ID
+WHERE hd.course_id = 1201
+ORDER BY hd.AssignmentId DESC;
+
+SELECT TOP 1 QuizID FROM Quizzes WHERE course_id = 1201 ORDER BY QuizID DESC
+SELECT QuizID FROM Questions WHERE QuestionID = 12
+SELECT Marks FROM Questions WHERE QuestionID = 16
+
+SELECT QuizName FROM Quizzes WHERE QuizID = %s
+
+SELECT TOP 1 QuestionID FROM Questions ORDER BY QuestionID DESC
+
+
+
+
+SELECT COUNT(*) FROM AttendanceList 
+WHERE Student_ID = 20190675 AND CourseName = 'Math-1201' and AttendanceStatus <> 'absent'
+
+SELECT TOP 1 si.Student_Name, si.Student_ID, si.Student_Image, hd.FileContent, hd.DeliveredDate
+FROM StudentInformation si
+INNER JOIN HomeworkDelivered hd ON si.Student_ID = hd.Student_ID
+WHERE si.Student_ID = 20190675 AND hd.course_id = 1201
+ORDER BY hd.AssignmentId DESC;
+
+SELECT Student_ID FROM StudentInformation
+SELECT DISTINCT StudentInformation.Student_Image ,StudentInformation.Student_Name, StudentInformation.Student_ID,
+StudentInformation.Student_Level, StudentInformation.Class FROM
+StudentInformation
+INNER JOIN StudentCourses ON StudentInformation.Student_ID = StudentCourses.Student_ID
+INNER JOIN CoursesList ON StudentCourses.course_id = StudentCourses.course_id
+WHERE StudentCourses.course_id = 1201
+
+SELECT course_id, course_name
+FROM Courses
+WHERE course_id = 1201
+
+
+
+
+SELECT COUNT(*) FROM Quizzes 
+WHERE course_id = 1201
+
+select *from AttendanceList
+
+SELECT 
+    Grading.StudentID,
+    Quizzes.QuizNumber,
+    SUM(Grading.MarksObtained) AS TotalMarksObtained,
+    SUM(Grading.TotalMarks) AS TotalPossibleMarks
+FROM 
+    Grading inner join Quizzes 
+	on Grading.QuizID = Quizzes.QuizID
+WHERE
+    Quizzes.QuizNumber = 2 AND Grading.StudentID = 20190675
+
+GROUP BY 
+    Grading.StudentID, 
+    Quizzes.QuizNumber
+
+
+
+
+
+
+
+SELECT 
+    id, 
+    publisher, 
+    content, 
+    CONCAT(LEFT(DATENAME(MONTH, publish_date), 3), ' ', DAY(publish_date), ' ', YEAR(publish_date)) AS publish_date,
+    publisher_image,
+    pdf_file,  
+    video_file 
+FROM 
+    CourseAnnouncement 
+ORDER BY 
+    id DESC
+
+
+
+
+SELECT 
+FileContent, 
+DescriptionContent, 
+DeadlineDate, 
+AssignementNumber,  
+PublisherImage, 
+CreatedAt, 
+AssignmentId       
+FROM Assignments
+
+
+SELECT CoursesList.course_id, CoursesList.course_name, CoursesList.course_level
+FROM CoursesList INNER JOIN StudentCourses ON CoursesList.course_id = StudentCourses.course_id
+WHERE StudentCourses.Student_ID = 20190675
+
+
+
+SELECT sa.StudentID, sa.QuestionID, sa.AnswerType, sa.StudentAnswer, sa.SelectedOption, sa.Marks
+FROM StudentAnswers sa
+WHERE sa.QuizID = 8
+
+
+
+
+
+SELECT si.Student_Name, si.Student_ID, si.Student_Image, hd.FileContent
+FROM StudentInformation si
+INNER JOIN HomeworkDelivered hd ON si.Student_ID = hd.Student_ID
+where si.Student_ID = 20190675
+
+
+
+
+SELECT Courses.course_id, Courses.course_name,  Courses.course_level, Courses.course_image
+FROM StudentCourses 
+INNER JOIN Courses ON Courses.course_id = StudentCourses.course_id
+INNER JOIN StudentInformation ON  StudentCourses.Student_ID = StudentInformation.Student_ID
+WHERE  StudentInformation.Student_ID = 20190675
+
+
+
+update Assignments
+set Flag = 0 where Student_ID = 20190675
+
+                    SELECT Student_ID
+                    FROM FinalGrade
+                    WHERE Student_ID = 20190675 
+update SubmittedAssignmentFlag
+set Flag = 1 
+where FlagID = 9
+
+
+select *from TeacherInformation
+update TeacherInformation
+set Teacher_Gender = 'Female'
+where Teacher_Id = 1
+select *from SubmittedAssignmentFlag
+
+select *from HomeworkDelivered
+
+SELECT TOP 1 Student_ID
+FROM StudentInformation
+ORDER BY Student_ID DESC;
+
+
+
+
+
+SELECT sa.StudentID, sa.QuestionID, sa.AnswerType, sa.StudentAnswer, sa.SelectedOption, sa.Marks, 
+o.OptionText AS SelectedOptionText
+FROM StudentAnswers sa
+LEFT JOIN Options o ON sa.SelectedOption = o.OptionID
+WHERE sa.QuizID = 8
+
+
+
+
+SELECT q.QuestionID, q.QuestionText, q.QuestionType, q.Marks, o.OptionID, o.OptionText, o.IsCorrect
+FROM Questions q
+LEFT JOIN Options o ON q.QuestionID = o.QuestionID
+WHERE q.QuizID = 9
+
+
+
+
+SELECT sa.StudentID, sa.QuestionID, sa.AnswerType, sa.StudentAnswer, sa.SelectedOption, sa.Marks, 
+o.OptionText AS SelectedOptionText
+FROM StudentAnswers sa
+LEFT JOIN Options o ON sa.SelectedOption = o.OptionID
+WHERE sa.QuizID = 11
+
+
+SELECT o.OptionText, o.IsCorrect
+FROM Questions q
+LEFT JOIN Options o ON q.QuestionID = o.QuestionID
+WHERE q.QuizID = 8 AND q.QuestionID = o.QuestionID AND o.OptionID = 
+
+
+
+
+
+
+
+
+
+SELECT Courses.course_id, Courses.course_name,  Courses.course_level, Courses.course_image
+FROM StudentCourses 
+INNER JOIN Courses ON Courses.course_id = StudentCourses.course_id
+INNER JOIN StudentInformation ON  StudentCourses.Student_ID = StudentInformation.Student_ID
+WHERE  StudentInformation.Student_ID = 20190675
+
+
+
+select *from StudentInformation
+update StudentInformation
+set Student_Name = 'Hazim ali'  where Student_ID = 20190677
+
+SELECT COUNT(*) AS UnreadAnnouncements
+FROM AnnouncementReadStatus
+WHERE Student_ID =  AND IsRead = 0;
+
+
+
+SELECT TOP 1 id  FROM Announcement ORDER BY id DESC;
+
+
+SELECT Courses.course_id, Courses.course_name,  Courses.course_level, Courses.image_url, Courses.link_url
+        FROM StudentCourses 
+        INNER JOIN Courses ON Courses.course_id = StudentCourses.course_id
+		INNER JOIN StudentInformation ON  StudentCourses.Student_ID = StudentInformation.Student_ID
+        WHERE  StudentInformation.Student_ID = 20190675
+
+
+SELECT CourseContents.PublisherImage, CourseContents.PublisherName, CourseContents.DateOfPublish,
+        CourseContents.DescriptionText, CourseContents.MaterialPath, Courses.course_name
+        FROM CourseContents
+        INNER JOIN Courses ON CourseContents.course_id = Courses.course_id
+        WHERE Courses.course_id = 1909
+        ORDER BY CourseContents.MaterialID
+
+
+SELECT StudentInformation.Student_Name, StudentInformation.Student_ID,  StudentCourses.course_id, StudentCourses.Student_ID
+        FROM StudentCourses 
+        INNER JOIN Courses ON Courses.course_id = StudentCourses.course_id
+		INNER JOIN StudentInformation ON  StudentCourses.Student_ID = StudentInformation.Student_ID
+        WHERE  StudentInformation.Student_ID = 20190675
+
+
+
+drop table TeacherInformation
+drop table StudentInformation
+drop table MediaFiles
+drop table Assignments
+
+
+
+
+delete from StudentInformation where Student_ID = 20190676
+delete from TeacherInformation where Teacher_Id = 20240001
+delete from Announcement where id = 4
+delete from CourseContents 
+delete from CoursesList
+delete from StudentCourses
+delete from TeacherCourses
+delete from Courses
+delete from MediaFiles
+delete from Announcement
+delete from AnnouncementReadStatus
+delete from AttendanceList 
+delete from Attendance 
+delete from  Assignments
+delete from Quizzes
+delete from Questions
+delete from Options
+delete from StudentAnswers
+delete from QuizGrades
+delete from HomeworkDelivered
+delete from HomeWorkGrades
+delete from FinalGrade
+delete from SubmittedAssignmentFlag
+delete from CourseAnnouncement
+delete from CourseAnnouncementReadStatus
+delete from QuizTakeStatus
+update StudentInformation
